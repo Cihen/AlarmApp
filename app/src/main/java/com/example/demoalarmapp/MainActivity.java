@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 if(strCurMinute.length() == 1)
                     strCurMinute = "0" + strCurMinute;
 
+                intent.putExtra("extra", "on");
                 pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
                 alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
 
@@ -76,7 +77,9 @@ public class MainActivity extends AppCompatActivity {
         btnDeleteAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pendingIntent.cancel();
+                alarmManager.cancel(pendingIntent);
+                intent.putExtra("extra", "off");
+                sendBroadcast(intent);
                 txtDisplayAlarm.setText("Alarm deleted !");
             }
         });

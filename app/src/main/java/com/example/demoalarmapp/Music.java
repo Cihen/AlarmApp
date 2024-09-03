@@ -22,6 +22,7 @@ public class Music extends Service {
     static final String CHANNEL_ID = "AlarmNotification";
 
     MediaPlayer mediaPlayer;
+    int id;
 
     private void createNotificationChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -41,18 +42,28 @@ public class Music extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
 
-        createNotificationChannel();
+        String key = intent.getExtras().getString("extra");
+        Log.d("Music nhan key", key);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("ALARM")
-                .setContentText("The alarm clock has gone off, wake up!")
-                .setSmallIcon(R.drawable.icon_alarm)
-                .build();
+        id = key.equals("on") ? 1 : 0;
+        if(id == 1) {
+            createNotificationChannel();
 
-        startForeground(1, notification);
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("ALARM")
+                    .setContentText("The alarm clock has gone off, wake up!")
+                    .setSmallIcon(R.drawable.icon_alarm)
+                    .build();
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.nhac_chuong_hkt);
-        mediaPlayer.start();
+            startForeground(1, notification);
+
+            mediaPlayer = MediaPlayer.create(this, R.raw.nhac_chuong_hkt);
+            mediaPlayer.start();
+            id = 0;
+        } else {
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+        }
 
         return START_NOT_STICKY;
     }
